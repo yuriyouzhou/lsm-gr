@@ -1,4 +1,5 @@
-# POC for liquidity savings mechanism and grid lock resolution implementation in blockchain
+# lsm-gl
+POC for liquidity savings mechanism and grid lock resolution implementation in blockchain
 
 ### how to run
 1. run `ganache-cli -b 3` to start the emulator

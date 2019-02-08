@@ -1,6 +1,6 @@
 pragma solidity >=0.4.21 <0.6.0;
 
-import "./TxnQueue.sol";
+import "./LSMQueue.sol";
 
 // ----------------------------------------------------------------------------
 // Safe maths
@@ -97,20 +97,20 @@ contract YollyCoin is ERC20Interface, Owned {
   mapping(address => uint) balances;
   mapping(address => mapping(address => uint)) allowed;
 
-  TxnQueue private txnQueue;
+  LSMQueue private lsmQueue;
 
 
   // ------------------------------------------------------------------------
   // Constructor
   // ------------------------------------------------------------------------
-  constructor(address _txnQueue) public {
+  constructor(address _lsmQueue) public {
     symbol = "YC";
     name = "Yolly Coin";
     decimals = 18;
     _totalSupply = 1000000 * 10**uint(decimals);
     balances[owner] = _totalSupply;
     emit Transfer(address(0), owner, _totalSupply);
-    txnQueue = TxnQueue(_txnQueue);
+    lsmQueue = LSMQueue(_lsmQueue);
   }
 
 
@@ -138,17 +138,17 @@ contract YollyCoin is ERC20Interface, Owned {
   function transfer(address to, uint tokens) public returns (bool success) {
     balances[msg.sender] = balances[msg.sender].sub(tokens);
     balances[to] = balances[to].add(tokens);
-    bool isSuccess = txnQueue.push(msg.sender, to, tokens);
-    
-    if (isSuccess) {
-      emit Transfer(msg.sender, to, tokens);
-      return true;
-    } else {
-      return false;
-    }
-    
+    emit Transfer(msg.sender, to, tokens);
+    return true;
   }
 
+  // ------------------------------------------------------------------------
+  // Add payment to lsm queue
+  // ------------------------------------------------------------------------
+
+  function enqueue(address to, uint tokens) public returns (uint) {
+    return lsmQueue.push(msg.sender, to, tokens);
+  }
 
   // ------------------------------------------------------------------------
   // Token owner can approve for `spender` to transferFrom(...) `tokens`

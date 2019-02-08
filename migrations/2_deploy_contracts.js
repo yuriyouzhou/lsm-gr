@@ -1,10 +1,10 @@
 const YollyCoin = artifacts.require("YollyCoin");
-const TxnQueue = artifacts.require("TxnQueue");
+const LSMQueue = artifacts.require("LSMQueue");
 
 module.exports = function(deployer) {
     let txnQueue;
-    deployer.deploy(TxnQueue).then(instance => {
-        txnQueue = instance.address;
-        return deployer.deploy(YollyCoin, txnQueue)
+    deployer.deploy(LSMQueue).then(instance => {
+        lsmQueue = instance.address;
+        return deployer.deploy(YollyCoin, lsmQueue)
     });
 };
