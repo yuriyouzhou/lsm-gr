@@ -4,7 +4,8 @@ import "./YollyCoin.sol";
 
 contract LSMQueue {
 
-  mapping (uint=>Transaction) ref2Txn;
+  mapping (bytes32=>Transaction) id2Txn;
+  bytes32[] txnIdList;
   uint depth;
 
   constructor() public {
@@ -22,6 +23,7 @@ contract LSMQueue {
     address from;
     address to;
     uint tokens;
+    uint seq;
     mapping(address => Status) status;
   }
 
@@ -31,20 +33,21 @@ contract LSMQueue {
 
   function push(address _from, address _to, uint _tokens) 
   public
-  returns (uint)
+  returns (bytes32)
   {
-    // bytes32 txnId = bytes32(sha256(abi.encodePacked(_from, _to, _tokens)));
-    depth ++;
-    ref2Txn[depth] = Transaction(_from, _to, _tokens);
-    return depth;
+    bytes32 txnId = bytes32(sha256(abi.encodePacked(_from, _to, _tokens)));
+    uint seq = txnIdList.length;
+    txnIdList.push(txnId);
+    id2Txn[txnId] = Transaction(_from, _to, _tokens, seq);
+    return txnId;
   }
 
-  function pull(uint id)
+  function pull(bytes32 id)
   public
   returns (bool)
   {
-    delete ref2Txn[id];
-    depth --;
+    delete id2Txn[id];
+    removeTxnIdFromList(id);
     return true;
   }
 
@@ -56,7 +59,38 @@ contract LSMQueue {
   view
   returns (uint)
   {
-    return depth;
+    return txnIdList.length;
   }  
+
+  function getIdByIdx(uint idx) 
+  public
+  view
+  returns (bytes32)
+  {    
+    bytes32 id = txnIdList[idx];  
+    return id;
+  }
+  
+  function getTxnTokenById(bytes32 id)
+  public
+  view
+  returns (uint)
+  {
+    return id2Txn[id].tokens;
+  }
+
+  // ------------------------------------------------------------------------
+  // Utility function
+  // ------------------------------------------------------------------------
+  function removeTxnIdFromList(bytes32 id)
+  private
+  {
+    uint index = id2Txn[id].seq;
+    for (uint i = index; i<txnIdList.length-1; i++) {
+      txnIdList[i] = txnIdList[i+1];
+    }
+    delete txnIdList[txnIdList.length-1];
+    txnIdList.length--;
+  }
 }
 

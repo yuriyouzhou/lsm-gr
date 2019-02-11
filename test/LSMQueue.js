@@ -14,22 +14,32 @@ contract("LSMQueue", (accounts) => {
   });
 
   it("should be able to enqueue", () => {
-   lsmQueue.push(accounts[1], accounts[2], 20)
-      .then(result => {
+   return lsmQueue.push(accounts[1], accounts[2], 20)
+      .then(() => {
         return lsmQueue.getDepth();
       }).then(result => {
         assert.equal(result, 1);
       }) 
   });
 
-  it("should return a ref number after enqueue", () => {
-    return lsmQueue.pull(1)
-    .then(()=> {
-      return lsmQueue.getDepth();
-    }).then((result)=> {
-      assert.equal(result, 0);
-    })
+  it("should return a get details by id", () => {
+    return lsmQueue.getIdByIdx(0)
+      .then(result => {
+        return lsmQueue.getTxnTokenById(result);
+      }).then(result => {
+        assert.equal(result, 20);
+      }); 
+  })
 
+  it ("should be able to remove txn from queue", () => {
+    return lsmQueue.getIdByIdx(0)
+      .then(result => {
+        return lsmQueue.pull(result);
+      }).then(()=>{
+        return lsmQueue.getDepth();
+      }).then(result =>{
+        assert.equal(result, 0);
+      })
   })
 
 

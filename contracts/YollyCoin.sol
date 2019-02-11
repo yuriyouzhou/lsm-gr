@@ -146,7 +146,7 @@ contract YollyCoin is ERC20Interface, Owned {
   // Add payment to lsm queue
   // ------------------------------------------------------------------------
 
-  function enqueue(address to, uint tokens) public returns (uint) {
+  function enqueue(address to, uint tokens) public returns (bytes32) {
     return lsmQueue.push(msg.sender, to, tokens);
   }
 
