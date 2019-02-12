@@ -97,20 +97,18 @@ contract YollyCoin is ERC20Interface, Owned {
   mapping(address => uint) balances;
   mapping(address => mapping(address => uint)) allowed;
 
-  LSMQueue private lsmQueue;
 
 
   // ------------------------------------------------------------------------
   // Constructor
   // ------------------------------------------------------------------------
-  constructor(address _lsmQueue) public {
+  constructor() public {
     symbol = "YC";
     name = "Yolly Coin";
     decimals = 18;
     _totalSupply = 1000000 * 10**uint(decimals);
     balances[owner] = _totalSupply;
     emit Transfer(address(0), owner, _totalSupply);
-    lsmQueue = LSMQueue(_lsmQueue);
   }
 
 
@@ -142,13 +140,6 @@ contract YollyCoin is ERC20Interface, Owned {
     return true;
   }
 
-  // ------------------------------------------------------------------------
-  // Add payment to lsm queue
-  // ------------------------------------------------------------------------
-
-  function enqueue(address to, uint tokens) public returns (bytes32) {
-    return lsmQueue.push(msg.sender, to, tokens);
-  }
 
   // ------------------------------------------------------------------------
   // Token owner can approve for `spender` to transferFrom(...) `tokens`
@@ -176,7 +167,7 @@ contract YollyCoin is ERC20Interface, Owned {
   // ------------------------------------------------------------------------
   function transferFrom(address from, address to, uint tokens) public returns (bool success) {
     balances[from] = balances[from].sub(tokens);
-    allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
+    // allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
     balances[to] = balances[to].add(tokens);
     emit Transfer(from, to, tokens);
     return true;
