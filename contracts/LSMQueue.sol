@@ -30,7 +30,6 @@ contract LSMQueue {
     uint tokens;
     uint timestamp;
     Priority priority;
-    mapping(address => Status) status;
   }
 
   // ------------------------------------------------------------------------
