@@ -18,7 +18,7 @@ contract("YollyCoinImpl", (accounts) => {
             return YollyCoinImpl.new(lsmQueue.address, yollyCoin.address);
         }).then(instance => {
             yollyCoinImpl = instance;
-            console.log("yollyCoin: +" + yollyCoinImpl.address)
+            console.log("yollyCoinImpl: +" + yollyCoinImpl.address)
         });
     })
 
