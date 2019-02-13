@@ -38,7 +38,7 @@ contract YollyCoinImpl {
   // ------------------------------------------------------------------------
   // LSM
   // ------------------------------------------------------------------------
-  function release() private {
+  function release() public {
     address _from;
     address _to;
     uint _tokens;

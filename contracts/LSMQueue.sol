@@ -58,7 +58,13 @@ contract LSMQueue {
   // ------------------------------------------------------------------------
   // Netting method
   // ------------------------------------------------------------------------
-  function updatePriority(bytes32 _id, Priority _priority) public {
+  function updatePriority(bytes32 _id, uint p) public {
+    Priority _priority;
+    if (p == 0) {
+      _priority = Priority.HIGH;
+    } else {
+      _priority = Priority.LOW;
+    }
     require(id2Txn[_id].priority != _priority, "no update needed"); 
 
     //update priority
@@ -89,9 +95,13 @@ contract LSMQueue {
           if(id2Txn[_id1].tokens > id2Txn[_id2].tokens) {
             id2Txn[_id1].tokens = id2Txn[_id1].tokens - id2Txn[_id2].tokens;
             return pull(_id2);
-          } else {
+          } else if (id2Txn[_id1].tokens < id2Txn[_id2].tokens) {
             id2Txn[_id2].tokens = id2Txn[_id2].tokens - id2Txn[_id1].tokens;
             return pull(_id1);
+          } else {
+            pull(_id1);
+            pull(_id2);
+            return true;
           }
         }
       } 
